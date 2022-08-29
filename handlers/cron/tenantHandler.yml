@@ -1,0 +1,10 @@
+tenantHandler:
+  handler: handlers/cron/tenantHandler.run
+  timeout: 900
+  # events:
+  #   # Invoke Lambda function every 2nd minute from Mon-Fri
+  #   - schedule: cron(0 * * * ? *)
+
+  tags:
+    DEPARTMENT: DMS
+    EMAIL: amit.kshirsagar@siemens.com

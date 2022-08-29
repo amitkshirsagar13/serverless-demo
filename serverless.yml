@@ -1,0 +1,56 @@
+service: dms-maintain-tenant
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: eu-west-1
+  stage: ${opt:stage, 'local'}
+  iam:
+    role: arn:aws:iam::000000000:role/lambda-ex
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-localstack
+
+functions:
+
+  # Cron Event
+  tenantCronEvent: ${file(./handlers/cron/tenantHandler.yml):tenantHandler}
+
+  # S3 Events
+  # tenantS3FileCreatedEvent: ${file(./handlers/s3/tankS3FileCreatedHandler.yml):tankS3FileCreatedHandler}
+
+  # SQS Events
+  tenantMessageReceiveEvent: ${file(./handlers/sqs/tenantHandler.yml):tenantHandler}
+
+resources:
+  Resources:
+    CronJobTrigger:
+      Type: AWS::Events::Rule
+      Properties:
+        Name: CronJobTrigger
+        Description: trigger every 5 min
+        ScheduleExpression: cron(*/2 * * * ? *)
+        State: ENABLED
+        Targets:
+        - Id: CronJobTrigger
+          Arn: arn:aws:lambda:eu-west-1:000000000000:function:tenantCronEvent
+    LambdaInvokePermission:
+      Type: AWS::Lambda::Permission
+      Properties:
+        FunctionName: tenantCronEvent
+        Action: lambda:InvokeFunction
+        Principal: events.amazonaws.com
+        SourceArn:
+          Fn::GetAtt: [CronJobTrigger, Arn]
+custom:
+  localstack:
+    debug: false
+    stages:
+      # list of stages for which the plugin should be enabled
+      - dev
+      - local
+    endpointFile: localstack_endpoint.json
+

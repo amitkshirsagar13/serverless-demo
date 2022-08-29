@@ -1,0 +1,9 @@
+tenantHandler:
+  handler: handlers/sqs/tenantHandler.run
+  timeout: 900
+  events:
+  - sqs: arn:aws:sqs:eu-west-1:000000000000:tenant-tasks
+
+  tags:
+    DEPARTMENT: DMS
+    EMAIL: amit.kshirsagar@siemens.com

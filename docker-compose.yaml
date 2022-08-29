@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  localstack:
+    image: localstack/localstack:latest
+    environment:
+    - AWS_DEFAULT_REGION=eu-west-1
+    - EDGE_PORT=4566
+    - SERVICES=cloudformation,events,s3,sns,sqs,stepfunctions,sts,xray,lambda,cloudwatch
+    ports:
+    - 4566:4566
+    - 8080:8080
+    volumes:
+    - C:/Temp/LocalStack/:/tmp/localstack/data
+    deploy:
+      resources:
+        limits:
+          cpus: '1.50'
+          memory: 3072M
