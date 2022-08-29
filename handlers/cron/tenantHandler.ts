@@ -1,4 +1,6 @@
 import { Context, Handler, Callback } from 'aws-lambda';
+import AWS from 'aws-sdk';
+const sqs = new AWS.SQS({region:'eu-west-1'}); 
 
 /**
  * @description handle some tank payload

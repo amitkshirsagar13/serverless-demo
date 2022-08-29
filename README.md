@@ -54,17 +54,19 @@ In below example, we use `cron` syntax to define `schedule` event that will trig
 
 ### DMS setup of the serverless infrastructure together
 ```
+aws --endpoint-url=http://localhost:4566 sqs create-queue --queue-name tenant-tasks
+aws --endpoint-url=http://localhost:4566 lambda create-event-source-mapping --function-name tenantMessageReceiveEvent --batch-size 1 --event-source-arn arn:aws:sqs:eu-west-1:000000000000:tenant-tasks 
+aws --endpoint-url=http://localhost:4566 sqs send-message --queue-url http://localhost:4566/000000000000/tenant-tasks --message-body file://data.json
+
+
 serverless deploy --stage local
 serverless invoke local -f tenantCronEvent --path data.json
 serverless info
 serverless deploy list
 serverless metrics
 
-aws --endpoint-url=http://localhost:4566 sqs create-queue --queue-name tenant-tasks
-aws --endpoint-url=http://localhost:4566 lambda create-event-source-mapping --function-name tenantMessageReceiveEvent --batch-size 1 --event-source-arn arn:aws:sqs:eu-west-1:000000000000:tenant-tasks 
-aws --endpoint-url=http://localhost:4566 sqs send-message --queue-url http://localhost:4566/000000000000/tenant-tasks --message-body file://data.json
 
-
+# Optional
 
 aws --endpoint-url=http://localhost:4566 events put-rule --name tenantCronEvent --schedule-expression "cron(*/2 * * * ? *)"
 aws --endpoint-url=http://localhost:4566 events list-rules
@@ -72,7 +74,6 @@ aws --endpoint-url=http://localhost:4566 events describe-rule --name CronJobTrig
 aws --endpoint-url=http://localhost:4566 events enable-rule --name CronJobTrigger
 aws --endpoint-url=http://localhost:4566 events list-targets-by-rule --rule  CronJobTrigger
 
-# Optional
 aws --endpoint-url=http://localhost:4566 iam create-role \
     --role-name tenant-trigger \
     --assume-role-policy-document '{"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Action": ["lambda:InvokeFunction"]}, {"Effect": "Allow", "Action": ["sqs:SendMessage", "sqs:ReceiveMessage", "sqs:DeleteMessage", "sqs:GetQueueAttributes"]}]}'
