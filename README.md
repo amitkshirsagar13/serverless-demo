@@ -66,7 +66,7 @@ aws --endpoint-url=http://localhost:4566 sqs send-message --queue-url http://loc
 
 
 
-aws --endpoint-url=http://localhost:4566 events put-rule --name tenantCronEvent --schedule-expression "cron(0 * * * ? *)"
+aws --endpoint-url=http://localhost:4566 events put-rule --name tenantCronEvent --schedule-expression "cron(*/2 * * * ? *)"
 aws --endpoint-url=http://localhost:4566 events list-rules
 aws --endpoint-url=http://localhost:4566 events describe-rule --name CronJobTrigger
 aws --endpoint-url=http://localhost:4566 events enable-rule --name CronJobTrigger

@@ -1,9 +1,9 @@
 tenantHandler:
   handler: handlers/cron/tenantHandler.run
   timeout: 900
-  # events:
-  #   # Invoke Lambda function every 2nd minute from Mon-Fri
-  #   - schedule: cron(0 * * * ? *)
+  # Invoke Lambda function every 2nd minute from Mon-Fri
+  events:
+    - schedule: cron(*/2 * * * ? *)
 
   tags:
     DEPARTMENT: DMS
