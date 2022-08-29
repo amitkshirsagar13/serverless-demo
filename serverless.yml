@@ -45,6 +45,7 @@ resources:
         Principal: events.amazonaws.com
         SourceArn:
           Fn::GetAtt: [CronJobTrigger, Arn]
+          
 custom:
   localstack:
     debug: false
