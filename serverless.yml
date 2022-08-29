@@ -7,23 +7,52 @@ provider:
   runtime: nodejs14.x
   region: eu-west-1
   stage: ${opt:stage, 'local'}
+  # iam:
+  #   role: arn:aws:iam::000000000:role/lambda-ex
   iam:
-    role: arn:aws:iam::000000000:role/lambda-ex
+    role: 
+      name: lambda-sqs-access
+      statements:
+        - Effect: Allow
+          Action:
+            - sqs:*
+          Resource:
+            Fn::GetAtt: [ DueDateEventQueue, Arn ]
+      tags:
+        DEPARTMENT: DMS
+        EMAIL: amit.kshirsagar@siemens.com
 
 plugins:
   - serverless-plugin-typescript
   - serverless-localstack
 
 functions:
-
   # Cron Event
-  tenantCronEvent: ${file(./handlers/cron/tenantHandler.yml):tenantHandler}
-
-  # S3 Events
-  # tenantS3FileCreatedEvent: ${file(./handlers/s3/tankS3FileCreatedHandler.yml):tankS3FileCreatedHandler}
-
+  tenantCronEvent: ${file(./handlers/cron/tenantHandler.yml):cronHandler}
   # SQS Events
-  tenantMessageReceiveEvent: ${file(./handlers/sqs/tenantHandler.yml):tenantHandler}
+  dueDateTenantMessageReceiveEvent: ${file(./handlers/sqs/dueDateEventHandler.yml):eventHandler}
+  # S3 Events
+  # tenantS3FileCreatedEvent: ${file(./handlers/s3/tenantS3FileCreatedHandler.yml):tenantS3FileCreatedHandler}
+
+resources:
+  Resources:
+    DueDateEventQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: dms-due-date-${opt:stage, self:provider.stage}-q
+        MessageRetentionPeriod: 86400
+        VisibilityTimeout: 30
+        RedrivePolicy: 
+          deadLetterTargetArn: 
+            "Fn::GetAtt":
+              - DueDateEventQueueDeadLetter
+              - Arn
+          maxReceiveCount: 1
+    DueDateEventQueueDeadLetter:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: dms-due-date-${opt:stage, self:provider.stage}-dlq
+        MessageRetentionPeriod: 1209600
 
 # resources:
 #   Resources:

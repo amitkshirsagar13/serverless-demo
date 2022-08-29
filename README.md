@@ -54,9 +54,18 @@ In below example, we use `cron` syntax to define `schedule` event that will trig
 
 ### DMS setup of the serverless infrastructure together
 ```
-aws --endpoint-url=http://localhost:4566 sqs create-queue --queue-name tenant-tasks
-aws --endpoint-url=http://localhost:4566 lambda create-event-source-mapping --function-name tenantMessageReceiveEvent --batch-size 1 --event-source-arn arn:aws:sqs:eu-west-1:000000000000:tenant-tasks 
-aws --endpoint-url=http://localhost:4566 sqs send-message --queue-url http://localhost:4566/000000000000/tenant-tasks --message-body file://data.json
+
+aws --endpoint-url=http://localhost:4566 sqs list-queues
+aws --endpoint-url=http://localhost:4566 lambda list-event-source-mappings
+aws --endpoint-url=http://localhost:4566 events list-rules
+aws --endpoint-url=http://localhost:4566 events list-targets-by-rule --rule  <rulename>
+aws --endpoint-url=http://localhost:4566 lambda list-functions
+
+# Optional if not already created, create queue and event source mapping
+aws --endpoint-url=http://localhost:4566 sqs create-queue --queue-name dms-due-date-local-q
+aws --endpoint-url=http://localhost:4566 lambda create-event-source-mapping --function-name dueDateTenantMessageReceiveEvent --batch-size 1 --event-source-arn arn:aws:sqs:eu-west-1:000000000000:dms-due-date-local-q
+
+aws --endpoint-url=http://localhost:4566 sqs send-message --queue-url http://localhost:4566/000000000000/dms-due-date-local-q --message-body file://data.json
 
 
 serverless deploy --stage local
@@ -69,10 +78,8 @@ serverless logs --function tenantCronEvent --tail
 # Optional
 
 aws --endpoint-url=http://localhost:4566 events put-rule --name tenantCronEvent --schedule-expression "cron(*/2 * * * ? *)"
-aws --endpoint-url=http://localhost:4566 events list-rules
 aws --endpoint-url=http://localhost:4566 events describe-rule --name CronJobTrigger
 aws --endpoint-url=http://localhost:4566 events enable-rule --name CronJobTrigger
-aws --endpoint-url=http://localhost:4566 events list-targets-by-rule --rule  CronJobTrigger
 
 aws --endpoint-url=http://localhost:4566 iam create-role \
     --role-name tenant-trigger \

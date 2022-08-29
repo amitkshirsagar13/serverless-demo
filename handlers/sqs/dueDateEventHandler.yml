@@ -1,0 +1,13 @@
+eventHandler:
+  handler: handlers/sqs/dueDateEventHandler.handleEventMessage
+  timeout: 900
+  events:
+  # - sqs: arn:aws:sqs:eu-west-1:000000000000:tenant-tasks
+  - sqs:
+      arn:
+        Fn::GetAtt:
+          - DueDateEventQueue
+          - Arn
+  tags:
+    DEPARTMENT: DMS
+    EMAIL: amit.kshirsagar@siemens.com

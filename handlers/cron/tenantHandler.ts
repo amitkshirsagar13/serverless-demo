@@ -15,7 +15,7 @@ const runCron: Handler = async (event: any, context: Context, callback: Callback
   };
   var sqsParams = {
     MessageBody: JSON.stringify(shot),
-    QueueUrl: 'http://localhost:4566/000000000000/tenant-tasks'
+    QueueUrl: 'http://localhost:4566/000000000000/dms-due-date-local-q'
   };
   var sqsdata = sqs.sendMessage(sqsParams, function(err, data) {
     if (err) {
