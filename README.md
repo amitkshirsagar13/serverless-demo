@@ -22,14 +22,16 @@ In below example, we use `rate` syntax to define `schedule` event that will trig
 
 ```yml
 functions:
-  rateHandler:
-    handler: handler.run
+  tenantCronEvent:
+    handler: handlers/cron/tenantHandler.run
     events:
-      - schedule: rate(1 minute)
+      - schedule: schedule: cron(0 * * * ? *)
+
+  tenantMessageReceiveEvent:
+    handler: handlers/sqs/tenantHandler.run
+    events:
+      - sqs: arn:aws:sqs:eu-west-1:000000000000:tenant-tasks
 ```
-
-Detailed information about rate expressions is available in official [AWS docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html#RateExpressions).
-
 
 ### Cron expressions syntax
 
@@ -49,14 +51,6 @@ All fields are required and time zone is UTC only.
 | Year          | 192199      | , - * /       |
 
 In below example, we use `cron` syntax to define `schedule` event that will trigger our `cronHandler` function every second minute every Monday through Friday
-
-```yml
-functions:
-  cronHandler:
-    handler: handler.run
-    events:
-      - schedule: cron(0/2 * ? * MON-FRI *)
-```
 
 ### DMS setup of the serverless infrastructure together
 ```
