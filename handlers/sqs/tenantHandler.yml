@@ -1,5 +1,5 @@
 tenantHandler:
-  handler: handlers/sqs/tenantHandler.run
+  handler: handlers/sqs/tenantHandler.handleEventMessage
   timeout: 900
   events:
   - sqs: arn:aws:sqs:eu-west-1:000000000000:tenant-tasks

@@ -1,5 +1,5 @@
 tenantHandler:
-  handler: handlers/cron/tenantHandler.run
+  handler: handlers/cron/tenantHandler.runCron
   timeout: 900
   # Invoke Lambda function every 2nd minute from Mon-Fri
   events:

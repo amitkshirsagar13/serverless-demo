@@ -64,7 +64,7 @@ serverless invoke local -f tenantCronEvent --path data.json
 serverless info
 serverless deploy list
 serverless metrics
-
+serverless logs --function tenantCronEvent --tail
 
 # Optional
 

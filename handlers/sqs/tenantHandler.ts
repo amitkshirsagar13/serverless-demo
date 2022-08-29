@@ -5,7 +5,7 @@ import { Context, Handler, Callback } from 'aws-lambda';
  * @param event event object
  * @param context context object
  */
-const run: Handler = async (event: any, context: Context, callback: Callback): Promise<any> => {
+const handleEventMessage: Handler = async (event: any, context: Context, callback: Callback): Promise<any> => {
   const shot = {
     message: 'Boom!!! 💥 Boom!!! 💥',
     event,
@@ -14,4 +14,4 @@ const run: Handler = async (event: any, context: Context, callback: Callback): P
   callback(undefined, { "statusCode" : 200, "body" : shot});
 };
 
-export { run };
+export { handleEventMessage };
