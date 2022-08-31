@@ -9,5 +9,5 @@ eventHandler:
           - DueDateEventQueue
           - Arn
   tags:
-    DEPARTMENT: DMS
-    EMAIL: amit.kshirsagar@siemens.com
+    DEPARTMENT: k8cluster
+    EMAIL: amit.kshirsagar.13@gmail.com

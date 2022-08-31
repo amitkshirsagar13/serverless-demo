@@ -6,14 +6,23 @@ services:
     environment:
     - AWS_DEFAULT_REGION=eu-west-1
     - EDGE_PORT=4566
-    - SERVICES=cloudformation,events,s3,sns,sqs,stepfunctions,sts,xray,lambda,cloudwatch
+    - SERVICES=cloudformation,events,s3,sns,sqs,stepfunctions,sts,xray,lambda,cloudwatch,dynamodb
+    - EXTRA_CORS_ALLOWED_ORIGINS=http://localhost:4500
     ports:
     - 4566:4566
     - 8080:8080
     volumes:
-    - C:/Temp/LocalStack/:/tmp/localstack/data
+    - /opt/LocalStack/:/tmp/localstack/data
     deploy:
       resources:
         limits:
           cpus: '1.50'
           memory: 3072M
+  ui:
+    image: aminfazl/aws-local-ui
+    ports:
+    - 4500:80
+    environment:
+      - LOCALSTACK_HOSTNAME=localstack
+    depends_on:
+    - localstack

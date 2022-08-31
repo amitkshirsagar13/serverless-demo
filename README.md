@@ -52,7 +52,7 @@ All fields are required and time zone is UTC only.
 
 In below example, we use `cron` syntax to define `schedule` event that will trigger our `cronHandler` function every second minute every Monday through Friday
 
-### DMS setup of the serverless infrastructure together
+### Setup of the serverless infrastructure together
 ```
 
 aws --endpoint-url=http://localhost:4566 sqs list-queues
@@ -62,10 +62,10 @@ aws --endpoint-url=http://localhost:4566 events list-targets-by-rule --rule  <ru
 aws --endpoint-url=http://localhost:4566 lambda list-functions
 
 # Optional if not already created, create queue and event source mapping
-aws --endpoint-url=http://localhost:4566 sqs create-queue --queue-name dms-due-date-local-q
-aws --endpoint-url=http://localhost:4566 lambda create-event-source-mapping --function-name dueDateTenantMessageReceiveEvent --batch-size 1 --event-source-arn arn:aws:sqs:eu-west-1:000000000000:dms-due-date-local-q
+aws --endpoint-url=http://localhost:4566 sqs create-queue --queue-name due-date-local-q
+aws --endpoint-url=http://localhost:4566 lambda create-event-source-mapping --function-name dueDateTenantMessageReceiveEvent --batch-size 1 --event-source-arn arn:aws:sqs:eu-west-1:000000000000:due-date-local-q
 
-aws --endpoint-url=http://localhost:4566 sqs send-message --queue-url http://localhost:4566/000000000000/dms-due-date-local-q --message-body file://data.json
+aws --endpoint-url=http://localhost:4566 sqs send-message --queue-url http://localhost:4566/000000000000/due-date-local-q --message-body file://data.json
 
 
 serverless deploy --stage local

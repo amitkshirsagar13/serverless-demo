@@ -1,4 +1,4 @@
-service: dms-maintain-tenant
+service: k8cluster-maintain-tenant
 
 frameworkVersion: '3'
 
@@ -19,8 +19,8 @@ provider:
           Resource:
             Fn::GetAtt: [ DueDateEventQueue, Arn ]
       tags:
-        DEPARTMENT: DMS
-        EMAIL: amit.kshirsagar@siemens.com
+        DEPARTMENT: k8cluster
+        EMAIL: amit.kshirsagar.13@gmail.com
 
 plugins:
   - serverless-plugin-typescript
@@ -39,7 +39,7 @@ resources:
     DueDateEventQueue:
       Type: AWS::SQS::Queue
       Properties:
-        QueueName: dms-due-date-${opt:stage, self:provider.stage}-q
+        QueueName: due-date-${opt:stage, self:provider.stage}-q
         MessageRetentionPeriod: 86400
         VisibilityTimeout: 30
         RedrivePolicy: 
@@ -51,9 +51,41 @@ resources:
     DueDateEventQueueDeadLetter:
       Type: AWS::SQS::Queue
       Properties:
-        QueueName: dms-due-date-${opt:stage, self:provider.stage}-dlq
+        QueueName: due-date-${opt:stage, self:provider.stage}-dlq
         MessageRetentionPeriod: 1209600
-
+    ImageStoreBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: image-store-${opt:stage, self:provider.stage}
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: usersTable
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: email
+            AttributeType: S
+          - AttributeName: fname
+            AttributeType: S
+          - AttributeName: lname
+            AttributeType: S
+          - AttributeName: age
+            AttributeType: "N"
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: email
+            KeyType: HASH
+          - AttributeName: fname
+            KeyType: HASH
+          - AttributeName: lname
+            KeyType: HASH
+          - AttributeName: age
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
 # resources:
 #   Resources:
 #     CronJobTrigger:
@@ -80,7 +112,6 @@ custom:
     debug: false
     stages:
       # list of stages for which the plugin should be enabled
-      - dev
       - local
     endpointFile: localstack_endpoint.json
 
