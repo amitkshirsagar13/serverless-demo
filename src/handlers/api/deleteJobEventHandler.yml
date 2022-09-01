@@ -1,0 +1,11 @@
+eventHandler:
+  architectures: arm64
+  handler: src/handlers/api/deleteJobEventHandler.handleEvent
+  timeout: 30
+  events:
+    - http:
+        path: /job/{id}
+        method: delete
+  tags:
+    DEPARTMENT: k8cluster
+    EMAIL: amit.kshirsagar.13@gmail.com

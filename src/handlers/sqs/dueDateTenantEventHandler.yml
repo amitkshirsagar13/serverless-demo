@@ -1,8 +1,8 @@
 eventHandler:
-  handler: handlers/sqs/dueDateEventHandler.handleEventMessage
+  architectures: arm64
+  handler: src/handlers/sqs/dueDateTenantEventHandler.handleEventMessage
   timeout: 900
   events:
-  # - sqs: arn:aws:sqs:eu-west-1:000000000000:tenant-tasks
   - sqs:
       arn:
         Fn::GetAtt:

@@ -4,7 +4,8 @@ frameworkVersion: '3'
 
 provider:
   name: aws
-  runtime: nodejs14.x
+  runtime: nodejs16.x
+  environment: ${file(src/config/config_${opt:stage, 'local'}.yml)}
   region: eu-west-1
   stage: ${opt:stage, 'local'}
   # iam:
@@ -18,6 +19,17 @@ provider:
             - sqs:*
           Resource:
             Fn::GetAtt: [ DueDateEventQueue, Arn ]
+        # Allow functions to list all buckets
+        - Effect: Allow
+          Action: 's3:ListBucket'
+          Resource: '*'
+        # Allow functions to read/write objects in a bucket
+        - Effect: Allow
+          Action:
+            - 's3:GetObject'
+          Resource:
+            - 'arn:aws:s3:::schema-storage/*'
+            - 'arn:aws:s3:::template-storage/*'
       tags:
         DEPARTMENT: k8cluster
         EMAIL: amit.kshirsagar.13@gmail.com
@@ -28,14 +40,24 @@ plugins:
 
 functions:
   # Cron Event
-  tenantCronEvent: ${file(./handlers/cron/tenantHandler.yml):cronHandler}
+  tenantCronEventHandler: ${file(./src/handlers/cron/tenantHandler.yml):cronHandler}
+  
   # SQS Events
-  dueDateTenantMessageReceiveEvent: ${file(./handlers/sqs/dueDateEventHandler.yml):eventHandler}
+  dueDateTenantEventHandler: ${file(./src/handlers/sqs/dueDateTenantEventHandler.yml):eventHandler}
+  
   # S3 Events
-  # tenantS3FileCreatedEvent: ${file(./handlers/s3/tenantS3FileCreatedHandler.yml):tenantS3FileCreatedHandler}
+  # tenantS3FileCreatedEventHandler: ${file(./src/handlers/s3/tenantS3FileCreatedEventHandler.yml):tenantS3FileCreatedHandler}
+  
+  # API Call Events
+  deleteJobEventHandler: ${file(./src/handlers/api/deleteJobEventHandler.yml):eventHandler}
 
 resources:
   Resources:
+    # S3 Bucket to hold Schema Files
+    ImageStoreBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: image-store-${opt:stage, self:provider.stage}
     DueDateEventQueue:
       Type: AWS::SQS::Queue
       Properties:
@@ -53,10 +75,6 @@ resources:
       Properties:
         QueueName: due-date-${opt:stage, self:provider.stage}-dlq
         MessageRetentionPeriod: 1209600
-    ImageStoreBucket:
-      Type: AWS::S3::Bucket
-      Properties:
-        BucketName: image-store-${opt:stage, self:provider.stage}
     UsersTable:
       Type: AWS::DynamoDB::Table
       Properties:

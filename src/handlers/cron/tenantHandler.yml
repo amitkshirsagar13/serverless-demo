@@ -1,10 +1,10 @@
 cronHandler:
-  handler: handlers/cron/tenantHandler.runCron
+  architectures: arm64
+  handler: src/handlers/cron/tenantHandler.runCron
   timeout: 900
   # Invoke Lambda function every 2nd minute from Mon-Fri
   events:
     - schedule: cron(*/2 * * * ? *)
-
   tags:
     DEPARTMENT: k8cluster
     EMAIL: amit.kshirsagar.13@gmail.com

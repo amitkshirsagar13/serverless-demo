@@ -54,6 +54,18 @@ In below example, we use `cron` syntax to define `schedule` event that will trig
 
 ### Setup of the serverless infrastructure together
 ```
+serverless deploy --stage local
+serverless invoke local -f tenantCronEvent --path data.json
+serverless info
+serverless deploy list
+serverless metrics
+serverless logs --function tenantCronEvent --tail
+
+serverless offline start
+curl -X DELETE http://localhost:3000/local/job/xxxxxxx
+
+aws --endpoint-url=http://localhost:4566 apigateway get-rest-apis
+curl -X DELETE http://localhost:4566/restapis/oc2573ua19/local/_user_request_/job/xxxxxxx
 
 aws --endpoint-url=http://localhost:4566 sqs list-queues
 aws --endpoint-url=http://localhost:4566 lambda list-event-source-mappings
@@ -67,13 +79,6 @@ aws --endpoint-url=http://localhost:4566 lambda create-event-source-mapping --fu
 
 aws --endpoint-url=http://localhost:4566 sqs send-message --queue-url http://localhost:4566/000000000000/due-date-local-q --message-body file://data.json
 
-
-serverless deploy --stage local
-serverless invoke local -f tenantCronEvent --path data.json
-serverless info
-serverless deploy list
-serverless metrics
-serverless logs --function tenantCronEvent --tail
 
 # Optional
 
