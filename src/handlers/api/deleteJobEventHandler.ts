@@ -5,7 +5,7 @@ import { Context, Handler, Callback } from 'aws-lambda';
  * @param event event object
  * @param context context object
  */
-const handleEvent: Handler = async (event: any, context: Context, callback: Callback): Promise<any> => {
+const handleEvent: Handler = async (event: any, context: Context): Promise<any> => {
   console.log("event", event);
   const jobId = event.pathParameters.id;
   console.log(`Process JobId[${jobId}] for deletion!!!`)
@@ -17,7 +17,7 @@ const handleEvent: Handler = async (event: any, context: Context, callback: Call
       "status": "success"
     }),
   };
-  callback(undefined, response);
+  return response;
 };
 
 export { handleEvent };

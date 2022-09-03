@@ -5,7 +5,7 @@ eventHandler:
   events:
     - http:
         path: /job/{id}
-        method: delete
+        method: get
   tags:
     DEPARTMENT: k8cluster
     EMAIL: amit.kshirsagar.13@gmail.com

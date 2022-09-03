@@ -100,7 +100,7 @@ resources:
           - AttributeName: lname
             KeyType: HASH
           - AttributeName: age
-            KeyType: HASH
+            KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
